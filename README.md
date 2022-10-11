@@ -6,4 +6,4 @@
 
 ## Deploy
 
-<https://vercel.com/matheria/frontend-project-lvl3/5BgrpTowsV23eyawxnmh415ecLNv>
+<https://frontend-project-lvl3-matheria.vercel.app/>
