@@ -1,11 +1,18 @@
-//import axios from "axios";
+import axios from "axios";
 import i18next from "i18next";
 import onChange from "on-change";
 import _ from "lodash";
 import * as yup from "yup";
-import validate from "./validate.js";
+
+import parser from "./parser.js";
 import render from "./view.js";
 import ru from "./locales/ru";
+
+const validator = (currentUrl, urls) => {
+  const schema = yup.string().url().notOneOf(urls);
+
+  return schema.validate(currentUrl);
+};
 
 export default () => {
   const defaultLanguage = "ru";
@@ -14,7 +21,7 @@ export default () => {
   i18nextInstance
     .init({
       lng: defaultLanguage,
-      debug: true,
+      debug: false,
       resources: {
         ru,
       },
@@ -25,7 +32,7 @@ export default () => {
           url: "invalidURL",
         },
         mixed: {
-          notOneOf: "rssExist",
+          notOneOf: "rssAlreadyExist",
         },
       });
     });
@@ -37,27 +44,38 @@ export default () => {
         state: "filling", //processed, failed
         errors: null,
       },
-      feeds: [{ url: "https://ru.hexlet.io/lessons.rss", id: "1" }],
+      url: "",
+      links: [],
+      feeds: [
+        /*{ url: "https://ru.hexlet.io/lessons.rss", id: "1" }*/
+      ],
     },
     render
   );
 
   const rssForm = document.querySelector(".rss-form");
+
   rssForm.addEventListener("submit", (e) => {
     e.preventDefault();
 
     const data = new FormData(e.target);
-    const link = data.get("url");
-    const errors = validate(link, state.feeds);
+    state.url = data.get("url");
 
-    if (!errors) {
-      state.feeds.unshift({ url: link, id: _.uniqueId() });
-      state.form.valid = true;
-      rssForm.reset();
-    } else {
-      state.form.valid = false;
-      state.form.errors = errors;
-      rssForm.reset();
-    }
+    validator(state.url, state.links)
+      .then(() => {
+        state.form.valid = true;
+        state.form.state = "processed";
+        return axios.get(
+          `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(
+            state.url
+          )}`
+        );
+      })
+      .then(({ data }) => {
+        console.log(data);
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
   });
 };
