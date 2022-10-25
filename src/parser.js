@@ -1,6 +1,32 @@
-export default (data) => {
+export default (response) => {
   const parser = new DOMParser();
-  const parsedData = parser.parseFromString(data, "application/xml");
+  const parsedData = parser.parseFromString(response.data.contents, "text/xml");
 
-  return parsedData;
+  const parserError = parsedData.querySelector("parsererror");
+  if (parserError) {
+    error.isParseError = true;
+    throw new Error("Parsing error");
+  }
+
+  const title = parsedData.querySelector("title").textContent;
+  const description = parsedData.querySelector("description").textContent;
+
+  const feed = {
+    title,
+    description,
+  };
+
+  const posts = parsedData.querySelectorAll("item").forEach((post) => {
+    const postTitle = post.querySelector("title").textContent;
+    const postDescription = post.querySelector("description").textContent;
+    const postLink = post.querySelector("link").textContent;
+
+    return {
+      title: postTitle,
+      description: postDescription,
+      link: postLink,
+    };
+  });
+
+  return { feed, posts };
 };
