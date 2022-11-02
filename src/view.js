@@ -73,40 +73,71 @@ const createPost = (post, text) => {
   return postItem;
 };
 
-const renderModal = () => {};
+const renderData = (state, elements, i18nextInstance) => {
+  const { feeds, posts } = elements;
+
+  feeds.innerHTML = "";
+  posts.innerHTML = "";
+
+  const feedsContainer = createCard(i18nextInstance.t("feeds"));
+  feeds.prepend(feedsContainer);
+
+  const feedsList = feeds.querySelector("ul");
+  state.feeds.forEach((feed) => {
+    const newFeed = createFeed(feed);
+    feedsList.prepend(newFeed);
+  });
+
+  const postsContainer = createCard(i18nextInstance.t("posts"));
+  posts.prepend(postsContainer);
+
+  const postsList = posts.querySelector("ul");
+  state.posts.forEach((post) => {
+    const newPost = createPost(post, i18nextInstance.t("buttons.view"));
+    postsList.append(newPost);
+  });
+};
 
 export default (state, elements, i18nextInstance) =>
   onChange(state, (path, value) => {
-    const { form, input, feedback } = elements;
+    const { form, input, submit, feedback } = elements;
 
     switch (path) {
       case "posts":
-        //отрендерить посты
+        renderData(state, elements, i18nextInstance);
         break;
       case "processState":
         switch (value) {
           case "filling":
+            submit.disabled = true;
+            input.removeAttribute("readonly");
+            input.focus();
             feedback.classList.remove("text-success");
             feedback.classList.remove("text-danger");
-            feedback.textContent = i18nInstance.t("loading");
+            feedback.textContent = i18nextInstance.t("loading");
             break;
-          case "sending":
+          case "recieved":
+            input.removeAttribute("readonly");
             input.classList.remove("is-invalid");
             feedback.classList.remove("text-danger");
             feedback.classList.add("text-success");
-            feedback.textContent = "RSS успешно загружен";
+            feedback.textContent = i18nextInstance.t("success");
             form.reset();
             input.focus();
-            //перерендер
+            renderData(state, elements, i18nextInstance);
             break;
           case "failed":
+            submit.disabled = false;
+            input.removeAttribute("readonly");
             input.classList.add("is-invalid");
             feedback.classList.remove("text-sucess");
             feedback.classList.add("text-danger");
-            feedback.textContent = i18nextInstance.t(`errors.${state.errors}`);
+            feedback.textContent = i18nextInstance.t(`errors.${state.error}`);
             break;
           default:
             throw new Error(`Unknown state process: ${value}`);
         }
+      default:
+        throw new Error(`Unknown path: ${value}`);
     }
   });
