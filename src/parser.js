@@ -1,10 +1,10 @@
 export default (response) => {
   const parser = new DOMParser();
   const parsedData = parser.parseFromString(response.data.contents, "text/xml");
-
   const parserError = parsedData.querySelector("parsererror");
+
   if (parserError) {
-    error.isParseError = true;
+    error.isParserError = true;
     throw new Error("Parsing error");
   }
 
@@ -16,7 +16,9 @@ export default (response) => {
     description,
   };
 
-  const posts = parsedData.querySelectorAll("item").forEach((post) => {
+  const items = parsedData.querySelectorAll("item");
+
+  const posts = Array.from(items).map((post) => {
     const postTitle = post.querySelector("title").textContent;
     const postDescription = post.querySelector("description").textContent;
     const postLink = post.querySelector("link").textContent;

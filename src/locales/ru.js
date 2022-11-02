@@ -2,12 +2,13 @@ export default {
   translation: {
     feeds: "Фиды",
     posts: "Посты",
-    buttoms: {
+    buttons: {
       view: "Просмотр",
       close: "Закрыть",
       readArticle: "Читать полностью",
     },
     success: "RSS успешно загружен",
+    loading: "Загрузка...",
     errors: {
       invalidURL: "Ссылка должна быть валидным URL",
       rssAlreadyExist: "RSS уже существует",
