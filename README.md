@@ -6,12 +6,15 @@
 
 ## Description
 
+**RSS aggregator** - a web application for aggregating RSS feeds from various sources. Service knows how to poll the site's RSS feeds for new posts and display them in a convenient form, marking what you read. The posts are updated automatically every 5 seconds.
+
 ## Setup
 
-```
-Make install 
+``` sh
+make install 
+make build
 ```
 
 ## Deploy
 
-<https://frontend-project-lvl3-matheria.vercel.app/>
+### [RSS aggregator](https://frontend-project-lvl3-matheria.vercel.app/)
