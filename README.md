@@ -11,8 +11,8 @@
 ## Setup
 
 ``` sh
-make install 
-make build
+$ make install 
+$ make build
 ```
 
 ## Deploy
