@@ -39,12 +39,19 @@ const getUrlProxy = (url) => {
   return proxifiedUrl.toString();
 };
 
+const handlePosts = (feedId, posts) => posts.map((post) => ({
+  title: post.title,
+  description: post.description,
+  link: post.link,
+  id: _.uniqueId('post_'),
+  feedId,
+}));
+
 const handleEvents = (view, state, elements) => {
   const { form, postsContainer } = elements;
 
   const handleForm = (e) => {
     e.preventDefault();
-
     const formData = new FormData(e.target);
     state.url = formData.get('url');
     view.processState = 'filling';
@@ -53,7 +60,6 @@ const handleEvents = (view, state, elements) => {
       .then(() => axios.get(getUrlProxy(state.url)))
       .then((response) => {
         const data = parser(response);
-
         const viewFeed = {
           title: data.feed.title,
           description: data.feed.description,
@@ -63,15 +69,6 @@ const handleEvents = (view, state, elements) => {
 
         state.feedId = viewFeed.id;
         state.feeds.push(viewFeed);
-
-        const handlePosts = (feedId, posts) => posts.map((post) => ({
-          title: post.title,
-          description: post.description,
-          link: post.link,
-          id: _.uniqueId('post_'),
-          feedId,
-        }));
-
         const viewPost = handlePosts(state.feedId, data.posts);
 
         state.posts = [...viewPost, ...state.posts];
@@ -117,13 +114,6 @@ const updateRssFeed = (view, state) => {
       const parsedData = parser(response);
       const diff = _.differenceBy(parsedData.posts, state.posts, 'link');
       if (diff) {
-        const handlePosts = (feedId, posts) => posts.map((post) => ({
-          title: post.title,
-          description: post.description,
-          link: post.link,
-          id: _.uniqueId('post_'),
-          feedId,
-        }));
         const newPosts = handlePosts(feed.id, diff);
         view.posts = [...newPosts, ...state.posts];
       }
@@ -159,7 +149,7 @@ export default () => {
     });
 
   const state = {
-    processState: '', // filling, received, failed
+    processState: '',
     errors: null,
     url: '',
     feeds: [],
