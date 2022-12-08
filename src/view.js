@@ -69,7 +69,6 @@ const createPost = (post, text) => {
   postBtn.textContent = text;
 
   postItem.prepend(postLink, postBtn);
-
   return postItem;
 };
 

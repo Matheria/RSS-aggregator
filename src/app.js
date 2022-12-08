@@ -112,7 +112,6 @@ const handleEvents = (view, state, elements) => {
 
 const updateRssFeed = (view, state) => {
   const updateInterval = 5000;
-
   const promises = state.feeds.map((feed) => axios.get(getUrlProxy(feed.url))
     .then((response) => {
       const parsedData = parser(response);
